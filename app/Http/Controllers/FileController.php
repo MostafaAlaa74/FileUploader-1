@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\File;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFileRequest;
+use App\Models\User;
+use App\Notifications\Reminder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -34,11 +36,14 @@ class FileController extends Controller
      */
     public function store(StoreFileRequest $request)
     {
+        $user = User::findOrFail(Auth::id());
         $file = new File();
-        $file->name = uniqid() . '_' . $request->file('file')->getClientOriginalName();
+        $fileName = $file->name = uniqid() . '_' . $request->file('file')->getClientOriginalName();
         $file->path = $request->file('file')->store('files', 'public');
         $file->user_id = Auth::id();
         $file->save();
+
+        $user->notify(new Reminder($fileName));
 
         return redirect()->route('files.index')->with('success', 'File uploaded successfully.');
     }
