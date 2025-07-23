@@ -42,7 +42,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <!-- From Uiverse.io by cssbuttons-io -->
-                                                <button class="delete-button"> Delete
+                                                <button type="submit" class="delete-button"> Delete
                                                 </button>
                                             </form>
 

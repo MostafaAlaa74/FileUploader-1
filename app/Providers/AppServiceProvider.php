@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('delete-file' , function($user , $file){
-            return $user->id === $file->user_id;
+            return $user->id === $file->user_id || $user->role === 'admin';
         });
 
         Gate::define('viewAll', [FilePolicy::class , 'viewAny']);

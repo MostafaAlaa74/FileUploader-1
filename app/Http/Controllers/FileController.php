@@ -20,16 +20,13 @@ class FileController extends Controller
     public function index()
     {
 
-        if (Gate::allows('viewAll', File::class)) {
+        $files = Gate::allows('viewAll', File::class)
             // If The User's Role Is Admin he will see all files stored in the database 
-            $files = File::all();
-            return view('files-index', compact('files'));
-        } else {
+            ? File::all()
             // If The User's Role Is Not Admin he will see only the files that he uploaded
-            $user_id = Auth::id();
-            $files = File::where('user_id', $user_id)->get();
-            return view('files-index', compact('files'));
-        }
+            :
+            File::where('user_id', Auth::id())->get();
+        return view('files-index', compact('files'));
     }
 
     /**
@@ -45,7 +42,7 @@ class FileController extends Controller
      */
     public function store(StoreFileRequest $request)
     {
-        
+
         $file = new File();
         $file->name = uniqid() . '_' . $request->file('file')->getClientOriginalName();
         $file->path = $request->file('file')->store('files', 'public');
@@ -87,7 +84,6 @@ class FileController extends Controller
     public function destroy(File $file)
     {
         if (Gate::allows('delete-file', $file)) {
-            $file = File::findOrFail($file->id);
             Storage::disk('public')->delete($file->path);
 
             $file->delete();
