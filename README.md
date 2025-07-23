@@ -19,8 +19,7 @@ A Laravel-based web application for uploading, managing, and deleting files with
 
 ## 🛠️ Tech Stack
 
-- **Laravel 10**
-- **Tailwind CSS**
+- **Laravel 12**
 - **Notifications** (Mail & Database channels)
 - **Laravel Policies** for Authorization
 - **Validation Requests** (`StoreFileRequest`)
