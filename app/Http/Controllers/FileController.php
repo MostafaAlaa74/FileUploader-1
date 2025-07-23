@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Notifications\Reminder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
@@ -18,9 +19,17 @@ class FileController extends Controller
      */
     public function index()
     {
-        $user_id = Auth::id();
-        $files = File::where('user_id', $user_id)->get();
-        return view('files-index', compact('files'));
+
+        if (Gate::allows('viewAll', File::class)) {
+            // If The User's Role Is Admin he will see all files stored in the database 
+            $files = File::all();
+            return view('files-index', compact('files'));
+        } else {
+            // If The User's Role Is Not Admin he will see only the files that he uploaded
+            $user_id = Auth::id();
+            $files = File::where('user_id', $user_id)->get();
+            return view('files-index', compact('files'));
+        }
     }
 
     /**
@@ -36,14 +45,14 @@ class FileController extends Controller
      */
     public function store(StoreFileRequest $request)
     {
-        $user = User::findOrFail(Auth::id());
+        
         $file = new File();
-        $fileName = $file->name = uniqid() . '_' . $request->file('file')->getClientOriginalName();
+        $file->name = uniqid() . '_' . $request->file('file')->getClientOriginalName();
         $file->path = $request->file('file')->store('files', 'public');
         $file->user_id = Auth::id();
         $file->save();
 
-        $user->notify(new Reminder($fileName));
+        //$user->notify(new Reminder($fileName));
 
         return redirect()->route('files.index')->with('success', 'File uploaded successfully.');
     }
@@ -77,11 +86,14 @@ class FileController extends Controller
      */
     public function destroy(File $file)
     {
-        $file = File::findOrFail($file->id);
-        Storage::disk('public')->delete($file->path);
+        if (Gate::allows('delete-file', $file)) {
+            $file = File::findOrFail($file->id);
+            Storage::disk('public')->delete($file->path);
 
-        $file->delete();
-
-        return redirect()->route('files.index')->with('success', 'File Deleted successfully.');
+            $file->delete();
+            return redirect()->route('files.index')->with('success', 'File Deleted successfully.');
+        } else {
+            return redirect()->route('files.index')->with('error', 'You are not authorized to delete this file.');
+        }
     }
 }

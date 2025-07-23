@@ -6,8 +6,8 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="w-full max-w-9xl mx-auto rounded-lg p-6 overflow-auto">
+            <div class="w-full max-w-9xl mx-auto bg-white rounded-lg shadow p-6 overflow-auto">
                 @if (session('success'))
                     <x-flash-message />
                 @endif
@@ -18,8 +18,8 @@
                         </li>
                 </div>
             </div>
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+            <div class="w-full max-w-9xl mx-auto bg-white rounded-lg shadow p-6 overflow-auto">
+                <div class="p-6 text-gray-900 overflow-auto">
                     <h1 class="text-2xl font-bold mb-4">User Files</h1>
                     <table class="min-w-full bg-white">
                         <thead>
@@ -35,102 +35,92 @@
                                     <td class="py-2 px-4 border-b">{{ $file->name }}</td>
                                     <td class="py-2 px-4 border-b">{{ $file->path }}</td>
                                     <td class="py-2 px-4 border-b">
-                                        <!-- From Uiverse.io by SachinKumar666 -->
-                                        <form action="{{ route('files.destroy', $file->id) }}" method="POST"
-                                            class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="button"></button>
-                                        </form>
+                                        <div class="button-group">
+                                            <!-- From Uiverse.io by SachinKumar666 -->
+                                            <form action="{{ route('files.destroy', $file->id) }}" method="POST"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <!-- From Uiverse.io by cssbuttons-io -->
+                                                <button class="delete-button"> Delete
+                                                </button>
+                                            </form>
 
-                                        <!-- From Uiverse.io by dovatgabriel -->
+                                            <!-- From Uiverse.io by dovatgabriel -->
 
-                                        <a href="{{ asset('storage/' . $file->path) }}"
-                                            class="buttonDownload">Download</a>
+                                            <a href="{{ asset('storage/' . $file->path) }}"
+                                                class="buttonDownload">Download</a>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                     <style>
-                        /* From Uiverse.io by dovatgabriel */
-                        .buttonDownload {
-                            display: inline-block;
-                            position: relative;
-                            padding: 10px 25px;
-                            background-color: #4CC713;
-                            color: white;
-                            font-family: sans-serif;
-                            text-decoration: none;
-                            font-size: 0.9em;
-                            text-align: center;
-                            text-indent: 15px;
+                        /* From Uiverse.io by cssbuttons-io */
+                        .button-group {
+                            display: flex;
+                            gap: 10px;
+                            /* spacing between buttons */
+                            align-items: center;
+                        }
+
+                        .delete-button {
+                            padding: 1.3em 3em;
+                            font-size: 12px;
+                            text-transform: uppercase;
+                            letter-spacing: 2.5px;
+                            font-weight: 500;
+                            color: #000;
+                            background-color: #fff;
                             border: none;
+                            border-radius: 45px;
+                            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+                            transition: all 0.3s ease 0s;
+                            cursor: pointer;
+                            display: inline;
+                            outline: none;
+                        }
+
+                        .delete-button:hover {
+                            background-color: #c42323;
+                            box-shadow: 0px 15px 20px rgba(196, 35, 35, 0.4);
+                            color: #fff;
+                            transform: translateY(-7px);
+                        }
+
+                        .delete-button:active {
+                            transform: translateY(-1px);
+                        }
+
+                        .buttonDownload {
+                            padding: 1.3em 3em;
+                            font-size: 12px;
+                            text-transform: uppercase;
+                            letter-spacing: 2.5px;
+                            font-weight: 500;
+                            color: #000;
+                            background-color: #fff;
+                            border: none;
+                            border-radius: 45px;
+                            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+                            transition: all 0.3s ease 0s;
+                            cursor: pointer;
+                            outline: none;
                         }
 
                         .buttonDownload:hover {
-                            background-color: #45a21a;
-                            color: white;
+                            background-color: #23c463;
+                            box-shadow: 0px 15px 20px rgba(35, 196, 99, 0.4);
+                            color: #fff;
+                            transform: translateY(-7px);
                         }
 
-                        .buttonDownload:before,
-                        .buttonDownload:after {
-                            content: ' ';
-                            display: block;
-                            position: absolute;
-                            left: 15px;
-                            top: 52%;
+                        .buttonDownload:active {
+                            transform: translateY(-1px);
                         }
 
-                        .buttonDownload:before {
-                            width: 10px;
-                            height: 2px;
-                            border-style: solid;
-                            border-width: 0 2px 2px;
-                        }
 
-                        .buttonDownload:after {
-                            width: 0;
-                            height: 0;
-                            margin-left: 3px;
-                            margin-top: -7px;
-                            border-style: solid;
-                            border-width: 4px 4px 0 4px;
-                            border-color: transparent;
-                            border-top-color: inherit;
-                            animation: downloadArrow 1s linear infinite;
-                            animation-play-state: paused;
-                        }
-
-                        .buttonDownload:hover:before {
-                            border-color: #cdefbd;
-                        }
-
-                        .buttonDownload:hover:after {
-                            border-top-color: #cdefbd;
-                            animation-play-state: running;
-                        }
-
-                        @keyframes downloadArrow {
-                            0% {
-                                margin-top: -7px;
-                                opacity: 1;
-                            }
-
-                            0.001% {
-                                margin-top: -15px;
-                                opacity: 0.4;
-                            }
-
-                            50% {
-                                opacity: 1;
-                            }
-
-                            100% {
-                                margin-top: 0;
-                                opacity: 0.4;
-                            }
-                        }
 
                         /* From Uiverse.io by SachinKumar666 */
                         .button {
